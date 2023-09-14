@@ -13,7 +13,18 @@ interface BiometricAuthMethod {
         lateinit var prompt: BiometricPrompt
     }
 
-    fun createPrompt(activity: FragmentActivity, callback: ((Int, BiometricPrompt) -> (CryptoObject?) -> Unit)): BiometricPrompt {
+    /**
+     * Creates a [BiometricPrompt] instance.
+     *
+     * The supplied [callback] will be triggered when the user successfully authenticates with their
+     * biometrics. It will be called with a reference to the prompt itself as well as the count of
+     * current callback triggers (for approaches that may re-launch the prompt). The [callback]
+     * returns a function that is then called with with an optional [CryptoObject].
+     */
+    fun createPrompt(
+        activity: FragmentActivity,
+        callback: ((Int, BiometricPrompt) -> (CryptoObject?) -> Unit)
+    ): BiometricPrompt {
         var calls = 0
         val promptHolder = PromptHolder()
         val prompt = BiometricPrompt(

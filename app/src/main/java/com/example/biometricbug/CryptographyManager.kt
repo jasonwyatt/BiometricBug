@@ -31,7 +31,8 @@ object CryptographyManager {
     }
 
     fun createSecretKey(keyName: String, userAuthRequired: Boolean = true): SecretKey {
-        // If Secretkey was previously created for that keyName, then grab and return it.
+        // If Secretkey was previously created for that keyName, then delete it first (to keep
+        // testing hermetic).
         val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
         keyStore.load(null) // Keystore must be loaded before it can be accessed
         try {
@@ -40,7 +41,6 @@ object CryptographyManager {
             }
         } catch (e: UnrecoverableKeyException) { /* ignore */ }
 
-        // if you reach here, then a new SecretKey must be generated for that keyName
         val paramsBuilder = KeyGenParameterSpec.Builder(keyName,
             KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
         paramsBuilder.apply {
@@ -66,7 +66,7 @@ object CryptographyManager {
 
     private val KEY_SIZE: Int = 256
     val ANDROID_KEYSTORE = "AndroidKeyStore"
-    private val ENCRYPTION_BLOCK_MODE = KeyProperties.BLOCK_MODE_CBC
-    private val ENCRYPTION_PADDING = KeyProperties.ENCRYPTION_PADDING_PKCS7
+    private val ENCRYPTION_BLOCK_MODE = KeyProperties.BLOCK_MODE_GCM
+    private val ENCRYPTION_PADDING = KeyProperties.ENCRYPTION_PADDING_NONE
     private val ENCRYPTION_ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
 }

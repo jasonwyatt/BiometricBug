@@ -41,7 +41,7 @@ fun MainActivityContent(activity: FragmentActivity?, modifier: Modifier = Modifi
                             .authenticateAndEncryptDecrypt(activity!!)
                     }
                 ) {
-                    Text(text = "androidx.biometric Prompt without CryptoObject")
+                    Text(text = "Approach 1")
                 }
                 Button(
                     onClick = {
@@ -49,7 +49,7 @@ fun MainActivityContent(activity: FragmentActivity?, modifier: Modifier = Modifi
                             .authenticateAndEncryptDecrypt(activity!!)
                     }
                 ) {
-                    Text(text = "androidx.biometric Prompt without CryptoObject\nsetUserAuthenticationRequired(False)")
+                    Text(text = "Approach 2")
                 }
                 Button(
                     onClick = {
@@ -57,7 +57,7 @@ fun MainActivityContent(activity: FragmentActivity?, modifier: Modifier = Modifi
                             .authenticateAndEncryptDecrypt(activity!!)
                     }
                 ) {
-                    Text(text = "androidx.biometric Prompt with CryptoObject")
+                    Text(text = "Approach 3")
                 }
                 Button(
                     onClick = {
@@ -65,7 +65,7 @@ fun MainActivityContent(activity: FragmentActivity?, modifier: Modifier = Modifi
                             .authenticateAndEncryptDecrypt(activity!!)
                     }
                 ) {
-                    Text(text = "wrapped androidx.biometric Prompt with CryptoObject")
+                    Text(text = "Approach 4")
                 }
             }
         }
