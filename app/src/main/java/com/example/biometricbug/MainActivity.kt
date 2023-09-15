@@ -19,6 +19,7 @@ import com.example.biometricbug.ui.theme.BiometricBugTheme
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setShowWhenLocked(true)
         setContent { MainActivityContent(this) }
     }
 }
@@ -66,6 +67,14 @@ fun MainActivityContent(activity: FragmentActivity?, modifier: Modifier = Modifi
                     }
                 ) {
                     Text(text = "Approach 4")
+                }
+                Button(
+                    onClick = {
+                        Approach5()
+                            .authenticateAndEncryptDecrypt(activity!!)
+                    }
+                ) {
+                    Text(text = "Approach 5")
                 }
             }
         }

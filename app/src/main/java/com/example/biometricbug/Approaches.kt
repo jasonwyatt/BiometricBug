@@ -1,10 +1,17 @@
 package com.example.biometricbug
 
+import android.app.KeyguardManager
+import android.content.Context
+import android.security.keystore.UserNotAuthenticatedException
 import android.util.Log
+import android.view.Gravity
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.FragmentActivity
 import javax.crypto.Cipher
+
 
 /**
  * Approach 1 is the simplest of approaches. We prompt for authentication, then when successful
@@ -54,12 +61,13 @@ class Approach2 : BiometricAuthMethod {
  * launching the prompt. We have seen crashes with this approach before even launching the prompt
  * because [Cipher.init] throws a `User not authenticated` exception before we even try to use the
  * cipher.
+ *
+ * On at least one Pixel 6a running Android 13: this approach can be made to crash by repeatedly
+ * opening the prompt and cancelling it rapidly.
  */
 class Approach3 : BiometricAuthMethod {
     override fun authenticateAndEncryptDecrypt(activity: FragmentActivity) {
         Log.i("Approach3", "Beginning Approach3")
-        val cipher =
-            CryptographyManager.getInitializedCipherForEncryption("approach-three")
         val prompt = createPrompt(activity) { _, _ ->
             {
                 val authedCipher = it!!.cipher!!
@@ -67,6 +75,20 @@ class Approach3 : BiometricAuthMethod {
                 Log.i("Approach3", "Approach3 worked fine")
                 Toast.makeText(activity, "Approach3 worked fine", Toast.LENGTH_LONG).show()
             }
+        }
+        val cipher = try {
+            CryptographyManager.getInitializedCipherForEncryption("approach-three")
+        } catch (e: UserNotAuthenticatedException) {
+            Toast.makeText(activity, "Failure when initializing Cipher", Toast.LENGTH_LONG)
+                .apply { setGravity(Gravity.TOP, 0, 0) }
+                .show()
+            val backupPrompt = createPrompt(activity) { _, _ ->
+                {
+                    authenticateAndEncryptDecrypt(activity)
+                }
+            }
+            doPrompt(backupPrompt, null, false)
+            return
         }
         doPrompt(prompt, BiometricPrompt.CryptoObject(cipher))
     }
@@ -102,5 +124,25 @@ class Approach4 : BiometricAuthMethod {
             }
         }
         doPrompt(prompt, null)
+    }
+}
+
+/**
+ * Approach5 is similar to [Approach3] (it passes the CryptoObject), but the key is configured to
+ * explicitly require authentication for every usage.
+ */
+class Approach5 : BiometricAuthMethod {
+    override fun authenticateAndEncryptDecrypt(activity: FragmentActivity) {
+        Log.i("Approach5", "Beginning Approach5")
+        val cipher =
+            CryptographyManager.getInitializedCipherForEncryption("approach-five", authEveryTime = true)
+        val prompt = createPrompt(activity) { _, _ ->
+            {
+                CryptographyManager.encryptData("hello world", it!!.cipher!!)
+                Log.i("Approach5", "Approach5 worked fine")
+                Toast.makeText(activity, "Approach5 worked fine", Toast.LENGTH_LONG).show()
+            }
+        }
+        doPrompt(prompt, BiometricPrompt.CryptoObject(cipher))
     }
 }

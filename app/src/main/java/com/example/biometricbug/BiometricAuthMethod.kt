@@ -2,9 +2,12 @@ package com.example.biometricbug
 
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
+import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.CryptoObject
 import androidx.fragment.app.FragmentActivity
+import javax.crypto.SecretKey
 
 interface BiometricAuthMethod {
     fun authenticateAndEncryptDecrypt(activity: FragmentActivity)
@@ -49,11 +52,20 @@ interface BiometricAuthMethod {
         return prompt
     }
 
-    fun doPrompt(prompt: BiometricPrompt, obj: CryptoObject?) {
+    fun doPrompt(prompt: BiometricPrompt, obj: CryptoObject?, allowDeviceCredentials: Boolean = false) {
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle("Authenticate")
-            .setNegativeButtonText("Negative")
             .setDescription("Please Authenticate")
+            .apply {
+                if (allowDeviceCredentials) {
+                    setAllowedAuthenticators(
+                        BiometricManager.Authenticators.BIOMETRIC_STRONG
+                                or BiometricManager.Authenticators.DEVICE_CREDENTIAL
+                    )
+                } else {
+                    setNegativeButtonText("Negative")
+                }
+            }
             .build()
         if (obj != null) {
             prompt.authenticate(promptInfo, obj)
