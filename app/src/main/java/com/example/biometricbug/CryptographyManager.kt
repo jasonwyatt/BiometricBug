@@ -62,8 +62,7 @@ object CryptographyManager {
             setBlockModes(ENCRYPTION_BLOCK_MODE)
             setEncryptionPaddings(ENCRYPTION_PADDING)
             setKeySize(KEY_SIZE)
-            //setIsStrongBoxBacked(true)
-            //setInvalidatedByBiometricEnrollment(false)
+            setInvalidatedByBiometricEnrollment(false)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 if (authEveryTime) {
                     setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG)

@@ -64,6 +64,9 @@ class Approach2 : BiometricAuthMethod {
  *
  * On at least one Pixel 6a running Android 13: this approach can be made to crash by repeatedly
  * opening the prompt and cancelling it rapidly.
+ *
+ * This approach has been modified to re-launc the prompt if there is ever a
+ * [UserNotAuthenticatedException] detected.
  */
 class Approach3 : BiometricAuthMethod {
     override fun authenticateAndEncryptDecrypt(activity: FragmentActivity) {
